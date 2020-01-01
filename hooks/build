@@ -8,6 +8,20 @@ echo "✅ Will build the following architectures: $(IFS=, ; echo "${build_archit
 echo "⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯"
 
 for arch in ${build_architectures[@]}; do
+
+  if [ "${arch}" == "arm" ]
+  then
+    JELLYFIN_ARCH="armhf"
+  else
+    JELLYFIN_ARCH=${arch}
+  fi
+
+  JELLYFIN_RELEASE=$(curl -k -s "https://api.github.com/repos/jellyfin/jellyfin/releases" | jq -r '.[0] | .tag_name') 
+  JELLYFIN_URL=$(curl -k -s "https://api.github.com/repos/jellyfin/jellyfin/releases/tags/${JELLYFIN_RELEASE}" | jq -r '.assets[].browser_download_url' | grep buster_${JELLYFIN_ARCH}.deb)
+
+  JELLYFIN-FFMPEG_RELEASE=$(curl -k -s "https://api.github.com/repos/jellyfin/jellyfin-ffmpeg/releases" | jq -r '.[0] | .tag_name') 
+  JELLYFIN-FFMPEG_URL=$(curl -k -s "https://api.github.com/repos/jellyfin/jellyfin-ffmpeg/releases/tags/${JELLYFIN-FFMPEG_RELEASE}" | jq -r '.assets[].browser_download_url' | grep buster_${JELLYFIN_ARCH}.deb)
+
   echo "✅ building $arch"
   echo "⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯"
 
