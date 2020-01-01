@@ -14,7 +14,8 @@ for arch in ${build_architectures[@]}; do
 
   docker exec docker_daemon docker build \
     --squash \
-    --platform=${arch} \
+    --platform=${docker_to_manifest_arch_map[${arch}]} \
+    --variant=${docker_to_manifest_variant_map[${arch}]} \
     --build-arg BASE_IMAGE_PREFIX=${base_image_prefix_map[${arch}]} \
     --file /build/$DOCKERFILE_PATH \
     --tag "${IMAGE_NAME}-${arch}"  \
