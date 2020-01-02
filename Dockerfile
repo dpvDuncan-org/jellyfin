@@ -13,11 +13,11 @@ RUN mkdir -p /cache /config
 RUN chmod 777 /cache /config
 RUN apt-get update -qq && apt-get dist-upgrade -qq && apt-get autoremove -qq && apt-get autoclean -qq
 #RUN apt-get install -qq apt-transport-https at libfl2 libass9 libbluray2 libdrm2 libfontconfig1 libfreetype6 libfribidi0 libmp3lame0 libopus0 libtheora0 libva-drm2 libva2 libvdpau1 libvorbis0a libvorbisenc2 libwebp6 libwebpmux3 libx11-6 libx264-155 libx265-165 libzvbi0
-RUN apt-get install -qq apt-transport-https wget
+RUN apt-get install -qq apt-transport-https wget gnupg
 RUN wget -O - https://repo.jellyfin.org/debian/jellyfin_team.gpg.key | apt-key add -
 RUN echo "deb [arch=$( dpkg --print-architecture )] https://repo.jellyfin.org/debian buster main" | tee /etc/apt/sources.list.d/jellyfin.list
 RUN apt-get update -qq && apt-get install jellyfin jellyfin-ffmpeg
-RUN apt-get purge -qq wget && apt-get autoremove -qq && apt-get autoclean -qq
+RUN apt-get purge -qq wget gnupg && apt-get autoremove -qq && apt-get autoclean -qq
 COPY scripts/start.sh /start.sh
 RUN chmod 777 /start.sh
 RUN rm -rf /tmp/* /var/lib/apt/lists/* /var/tmp/* /usr/bin/qemu-*-static
