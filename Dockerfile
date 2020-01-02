@@ -17,7 +17,7 @@ RUN apt-get install -qq apt-transport-https wget gnupg
 RUN wget -O - https://repo.jellyfin.org/debian/jellyfin_team.gpg.key | apt-key add -
 RUN echo "deb [arch=$( dpkg --print-architecture )] https://repo.jellyfin.org/debian buster main" | tee /etc/apt/sources.list.d/jellyfin.list
 RUN apt-get update -qq && apt-get install jellyfin jellyfin-ffmpeg -qq
-RUN if [ $( dpkg --print-architecture ) == 'amd64' ]; then apt-get install va-driver-all vdpau-driver-all -qq; fi
+RUN if [ "$( dpkg --print-architecture )" == 'amd64' ]; then apt-get install va-driver-all vdpau-driver-all -qq; fi
 RUN apt-get purge -qq wget gnupg && apt-get autoremove -qq && apt-get autoclean -qq
 COPY scripts/start.sh /start.sh
 RUN chmod 777 /start.sh
