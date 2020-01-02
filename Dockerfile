@@ -9,8 +9,6 @@ COPY --from=qemu /usr/bin/qemu-*-static /usr/bin/
 ENV PUID=0
 ENV PGID=0
 
-FROM balenalib/rpi-raspbian
-
 RUN mkdir -p /cache /config
 RUN chmod 777 /cache /config
 RUN apt-get update -qq && apt-get dist-upgrade -qq && apt-get autoremove -qq && apt-get autoclean -qq
