@@ -16,5 +16,11 @@ then
         USERNAME=jellyfin_run
 fi
 
+if [ -d /opt/vc/lib ]
+then
+        ldconfig /opt/vc/lib/
+fi
+
 usermod -a -G video jellyfin_run
+
 su $USERNAME -c '/usr/bin/jellyfin --datadir /config --cachedir /cache --ffmpeg /usr/share/jellyfin-ffmpeg/ffmpeg'
