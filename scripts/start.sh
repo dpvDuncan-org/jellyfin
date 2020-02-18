@@ -23,4 +23,4 @@ fi
 
 usermod -a -G video jellyfin_run
 
-su $USERNAME -c '/usr/bin/jellyfin --datadir /config --cachedir /cache --ffmpeg /usr/share/jellyfin-ffmpeg/ffmpeg'
+su -g $GROUPNAME $USERNAME -c '/usr/bin/jellyfin --datadir /config --cachedir /cache --ffmpeg /usr/share/jellyfin-ffmpeg/ffmpeg'
