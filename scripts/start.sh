@@ -4,6 +4,16 @@ chown -R $PUID:$PGID /config
 GROUPNAME=$(getent group $PGID | cut -d: -f1)
 USERNAME=$(getent passwd $PUID | cut -d: -f1)
 
+if [ "$PRID" ]
+then
+        RENDERGROUP=$(getent passwd $PRID | cut -d: -f1)
+        if [ ! $GROUPNAME ]
+        then
+                groupadd -g $PGID jellyfin_render
+                RENDERGROUP=jellyfin_render
+        fi
+fi
+
 if [ ! $GROUPNAME ]
 then
         groupadd -g $PGID jellyfin_run
@@ -22,5 +32,10 @@ then
 fi
 
 usermod -a -G video jellyfin_run
+
+if [ "$PRID" ]
+then
+        usermod -a -G $RENDERGROUP jellyfin_run
+fi
 
 su $USERNAME -c '/usr/bin/jellyfin --datadir /config --cachedir /cache --ffmpeg /usr/share/jellyfin-ffmpeg/ffmpeg'
