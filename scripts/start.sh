@@ -38,4 +38,4 @@ then
         usermod -a -G $RENDERGROUP jellyfin_run
 fi
 
-su $USERNAME -c '/usr/bin/jellyfin --datadir /config --cachedir /cache --ffmpeg /usr/share/jellyfin-ffmpeg/ffmpeg'
+su $USERNAME -c '/usr/bin/jellyfin -w /usr/share/jellyfin/web -d /config -C /cache --ffmpeg /usr/share/jellyfin-ffmpeg/ffmpeg'
