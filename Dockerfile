@@ -1,10 +1,6 @@
 ARG BASE_IMAGE_PREFIX
 
-FROM multiarch/qemu-user-static as qemu
-
 FROM ${BASE_IMAGE_PREFIX}debian:buster-slim
-
-COPY --from=qemu /usr/bin/qemu-*-static /usr/bin/
 
 ENV PUID=0
 ENV PGID=0
@@ -22,7 +18,7 @@ RUN if [ "$( dpkg --print-architecture )" == 'amd64' ]; then apt-get install i96
 RUN apt-get purge -qq wget gnupg && apt-get autoremove -qq && apt-get autoclean -qq
 COPY scripts/start.sh /start.sh
 RUN chmod 777 /start.sh
-RUN rm -rf /tmp/* /var/lib/apt/lists/* /var/tmp/* /usr/bin/qemu-*-static
+RUN rm -rf /tmp/* /var/lib/apt/lists/* /var/tmp/*
 
 EXPOSE 8096
 
