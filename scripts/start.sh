@@ -1,5 +1,5 @@
 #! /bin/sh
-chown -R $PUID:$PGID /config
+chown -R $PUID:$PGID /config &
 
 GROUPNAME=$(getent group $PGID | cut -d: -f1)
 USERNAME=$(getent passwd $PUID | cut -d: -f1)
