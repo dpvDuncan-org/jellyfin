@@ -32,9 +32,9 @@ Signed-By: /etc/apt/keyrings/jellyfin.gpg
 EOF
 
 RUN apt-get update -qq && \
-    apt-get install -qq -y jellyfin jellyfin-ffmpeg8 && \
+    apt-get install -qq -y jellyfin && \
     if [ "$(dpkg --print-architecture)" = "amd64" ]; then \
-        apt-get install -qq -y i965-va-driver mesa-va-drivers; \
+        apt-get install -qq -y i965-va-driver intel-media-va-driver mesa-va-drivers; \
     fi
 
 RUN apt-get purge -qq -y wget gnupg && \
