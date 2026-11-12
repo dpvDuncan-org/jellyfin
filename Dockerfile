@@ -1,28 +1,51 @@
-# syntax=docker/dockerfile:1
 ARG BASE_IMAGE_PREFIX
 
 FROM ${BASE_IMAGE_PREFIX}debian:trixie-slim
 
 ENV PUID=0
 ENV PGID=0
+ENV DEBIAN_FRONTEND=noninteractive
 
-RUN mkdir -p /cache /config
-RUN chmod 777 /cache /config
-RUN sed -i 's/main/main contrib non-free/g' /etc/apt/sources.list.d/debian.sources
-RUN apt-get update -qq && apt-get dist-upgrade -qq && apt-get autoremove -qq && apt-get autoclean -qq
-#RUN apt-get install -qq apt-transport-https at libfl2 libass9 libbluray2 libdrm2 libfontconfig1 libfreetype6 libfribidi0 libmp3lame0 libopus0 libtheora0 libva-drm2 libva2 libvdpau1 libvorbis0a libvorbisenc2 libwebp6 libwebpmux3 libx11-6 libx264-155 libx265-165 libzvbi0
-RUN apt-get install -qq apt-transport-https apt-utils wget gnupg at libfontconfig1 libfreetype6 libssl3t64
-RUN wget -O - https://repo.jellyfin.org/debian/jellyfin_team.gpg.key | apt-key add -
-RUN echo "deb [arch=$( dpkg --print-architecture )] https://repo.jellyfin.org/debian trixie main" | tee /etc/apt/sources.list.d/jellyfin.list
-RUN apt-get update -qq && apt-get install jellyfin jellyfin-ffmpeg8 -qq
-RUN if [ "$( dpkg --print-architecture )" == 'amd64' ]; then apt-get install i965-va-driver mesa-va-drivers -qq; fi
-RUN apt-get purge -qq wget gnupg && apt-get autoremove -qq && apt-get autoclean -qq
+RUN mkdir -p /cache /config /etc/apt/keyrings && \
+    chmod 777 /cache /config
+
+RUN sed -i 's/main/main contrib non-free/g' /etc/apt/sources.list.d/debian.sources && \
+    apt-get update -qq && \
+    apt-get dist-upgrade -qq -y && \
+    apt-get install -qq -y --no-install-recommends \
+        ca-certificates \
+        wget \
+        gnupg \
+        at \
+        libfontconfig1 \
+        libfreetype6 \
+        libssl3t64
+
+RUN wget -qO - https://repo.jellyfin.org/debian/jellyfin_team.gpg.key | gpg --dearmor -o /etc/apt/keyrings/jellyfin.gpg && \
+    cat <<EOF > /etc/apt/sources.list.d/jellyfin.sources
+Types: deb
+URIs: https://repo.jellyfin.org/debian
+Suites: trixie
+Components: main
+Architectures: $(dpkg --print-architecture)
+Signed-By: /etc/apt/keyrings/jellyfin.gpg
+EOF
+
+RUN apt-get update -qq && \
+    apt-get install -qq -y jellyfin jellyfin-ffmpeg8 && \
+    if [ "$(dpkg --print-architecture)" = "amd64" ]; then \
+        apt-get install -qq -y i965-va-driver mesa-va-drivers; \
+    fi
+
+RUN apt-get purge -qq -y wget gnupg && \
+    apt-get autoremove -qq -y && \
+    apt-get clean && \
+    rm -rf /tmp/* /var/lib/apt/lists/* /var/tmp/*
+
 COPY scripts/start.sh /start.sh
-RUN chmod 777 /start.sh
-RUN rm -rf /tmp/* /var/lib/apt/lists/* /var/tmp/*
+RUN chmod 755 /start.sh
 
 EXPOSE 8096
-
 VOLUME /config
 
-ENTRYPOINT /start.sh
+ENTRYPOINT ["/start.sh"]
